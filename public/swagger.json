@@ -1,0 +1,851 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "CMDB API",
+        "version": "3.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v2",
+            "description": "API v2"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Authenticate Existing User",
+                "operationId": "auth/login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "description": "Username",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "Password",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User profile data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                "extdata": {
+                                                    "description": "Authorization TOKEN",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/auth/refresh": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refrsh Existing User Token",
+                "operationId": "auth/refresh",
+                "responses": {
+                    "200": {
+                        "description": "User profile data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                "extdata": {
+                                                    "description": "New Authorization TOKEN",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout authorized user",
+                "operationId": "auth/logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout complete"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/auth/profile": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Return User profile data",
+                "operationId": "auth/profile",
+                "responses": {
+                    "200": {
+                        "description": "User profile data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/User"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/auth/access": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Return User access list",
+                "operationId": "auth/access",
+                "responses": {
+                    "200": {
+                        "description": "User access list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/Access"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/net/device": {
+            "get": {
+                "tags": [
+                    "net/device"
+                ],
+                "summary": "NetDevice list",
+                "operationId": "net/device",
+                "responses": {
+                    "200": {
+                        "description": "NetDevice list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceList"
+                                        },
+                                        {
+                                            "properties": {
+                                                "records": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/NetDevice"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/net/device/{id}": {
+            "get": {
+                "tags": [
+                    "net/device"
+                ],
+                "summary": "NetDevice item",
+                "operationId": "net/device/id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "NetDevice item",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/NetDevice"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/net/device/{id}/module": {
+            "get": {
+                "tags": [
+                    "net/device"
+                ],
+                "summary": "NetDevice item modules",
+                "operationId": "net/device/id/module",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "NetDevice item modules",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceList"
+                                        },
+                                        {
+                                            "properties": {
+                                                "records": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/NetModule"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/net/dhcpsnoop": {
+            "get": {
+                "tags": [
+                    "net/dhcpsnoop"
+                ],
+                "summary": "DHCP Snooping list",
+                "operationId": "net/dhcpsnoop",
+                "responses": {
+                    "200": {
+                        "description": "DHCP Snooping list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceList"
+                                        },
+                                        {
+                                            "properties": {
+                                                "records": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Dhcp"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/net/dhcpsnoop/create": {
+            "post": {
+                "tags": [
+                    "net/dhcpsnoop"
+                ],
+                "summary": "DHCP Snooping Create",
+                "operationId": "net/dhcpsnoop-create",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "host_id": {
+                                            "description": "Host ID",
+                                            "type": "string"
+                                        },
+                                        "host_name": {
+                                            "description": "Host Name",
+                                            "type": "string"
+                                        },
+                                        "host_ip": {
+                                            "description": "Host IP",
+                                            "type": "string"
+                                        },
+                                        "host_status": {
+                                            "description": "Host Status",
+                                            "type": "string"
+                                        },
+                                        "host_snmp_status": {
+                                            "description": "SNMP status",
+                                            "type": "string"
+                                        },
+                                        "ip": {
+                                            "description": "DHCP IP",
+                                            "type": "string"
+                                        },
+                                        "mac": {
+                                            "description": "DHCP MAC",
+                                            "type": "string"
+                                        },
+                                        "vlan": {
+                                            "description": "DHCP VLAN",
+                                            "type": "string"
+                                        },
+                                        "port": {
+                                            "description": "DHCP Port",
+                                            "type": "string"
+                                        },
+                                        "ts": {
+                                            "description": "UnixTimeStamp of last update",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Creating complete"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTToken": []
+                    }
+                ]
+            }
+        },
+        "/ping": {
+            "get": {
+                "tags": [
+                    "*system"
+                ],
+                "summary": "Ping request",
+                "operationId": "ping",
+                "responses": {
+                    "200": {
+                        "description": "Ping responce",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ResponceItem"
+                                        },
+                                        {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "default": "pong"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "version": {
+                                                            "description": "API version",
+                                                            "type": "string",
+                                                            "default": "0.0.0"
+                                                        },
+                                                        "ts": {
+                                                            "description": "Server UnitTimeStamp",
+                                                            "type": "integer",
+                                                            "default": "12345678901"
+                                                        },
+                                                        "date": {
+                                                            "description": "Server Date",
+                                                            "type": "string",
+                                                            "default": "31.12.2020"
+                                                        },
+                                                        "time": {
+                                                            "description": "Server Time",
+                                                            "type": "string",
+                                                            "default": "23:59:59"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ResponceError": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "status": {
+                                "description": "Status code",
+                                "type": "integer",
+                                "default": 400
+                            },
+                            "message": {
+                                "description": "Information message",
+                                "type": "string"
+                            },
+                            "data": {
+                                "description": "Zero Data",
+                                "type": "object"
+                            },
+                            "extdata": {
+                                "description": "Zero ExtData",
+                                "type": "object"
+                            },
+                            "debug": {
+                                "description": "Debug information",
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "ResponceItem": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "status": {
+                                "description": "Status code",
+                                "type": "integer",
+                                "default": 200
+                            },
+                            "message": {
+                                "description": "Information message",
+                                "type": "string"
+                            },
+                            "data": {
+                                "description": "Data",
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "extdata": {
+                                "description": "ExtData",
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "debug": {
+                                "description": "Debug information",
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "ResponceList": {
+                "allOf": [
+                    {
+                        "properties": {
+                            "status": {
+                                "description": "Status code",
+                                "type": "integer",
+                                "default": 200
+                            },
+                            "message": {
+                                "description": "Information message",
+                                "type": "string"
+                            },
+                            "records": {
+                                "description": "Records list",
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "page": {
+                                "description": "Actual page",
+                                "type": "integer"
+                            },
+                            "limit": {
+                                "description": "Limit on page",
+                                "type": "integer"
+                            },
+                            "find_records": {
+                                "description": "Find records",
+                                "type": "integer"
+                            },
+                            "total_records": {
+                                "description": "Total records in entity",
+                                "type": "integer"
+                            },
+                            "debug": {
+                                "description": "Debug information",
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            },
+            "Dhcp": {
+                "properties": {
+                    "id": {
+                        "description": "User ID",
+                        "type": "integer"
+                    },
+                    "host_id": {
+                        "description": "Host ZABBIX ID",
+                        "type": "string"
+                    },
+                    "host_name": {
+                        "description": "Host name",
+                        "type": "string"
+                    },
+                    "host_ip": {
+                        "description": "Host IP",
+                        "type": "string"
+                    },
+                    "host_status": {
+                        "description": "Host status",
+                        "type": "string"
+                    },
+                    "host_snmp_status": {
+                        "description": "Host status by SNMP",
+                        "type": "string"
+                    },
+                    "ip": {
+                        "description": "DHCP IP",
+                        "type": "string"
+                    },
+                    "mac": {
+                        "description": "DHCP MAC",
+                        "type": "string"
+                    },
+                    "vlan": {
+                        "description": "DHCP VLAN",
+                        "type": "string"
+                    },
+                    "port": {
+                        "description": "DHCP Port",
+                        "type": "string"
+                    },
+                    "ts": {
+                        "description": "UnixTimeStamp of last update",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "NetDevice": {
+                "properties": {
+                    "id": {
+                        "description": "NetDevice ID",
+                        "type": "integer"
+                    },
+                    "upid": {
+                        "description": "Parent NetDevice ID",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "NetDevice Type",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "NetDevice status",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "NetDevice hostname",
+                        "type": "string"
+                    },
+                    "ip": {
+                        "description": "NetDevice IP",
+                        "type": "string"
+                    },
+                    "sn": {
+                        "description": "NetDevice SN",
+                        "type": "string"
+                    },
+                    "pn": {
+                        "description": "NetDevice PN",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "NetModule": {
+                "properties": {
+                    "id": {
+                        "description": "NetModule ID",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "NetModule Type",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "NetModule status",
+                        "type": "string"
+                    },
+                    "name": {
+                        "description": "NetModule name",
+                        "type": "string"
+                    },
+                    "ip": {
+                        "description": "NetModule IP",
+                        "type": "string"
+                    },
+                    "sn": {
+                        "description": "NetModule SN",
+                        "type": "string"
+                    },
+                    "pn": {
+                        "description": "NetModule PN",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "description": "User ID",
+                        "type": "integer"
+                    },
+                    "username": {
+                        "description": "Username",
+                        "type": "string"
+                    },
+                    "fio": {
+                        "description": "Last First Subling (names)",
+                        "type": "string"
+                    },
+                    "email": {
+                        "description": "Email",
+                        "type": "string"
+                    },
+                    "admin": {
+                        "description": "isAdmin",
+                        "type": "integer"
+                    },
+                    "flag": {
+                        "description": "isActive",
+                        "type": "integer"
+                    },
+                    "ldap": {
+                        "description": "isLDAP",
+                        "type": "integer"
+                    },
+                    "date_logon": {
+                        "description": "Date of last logon",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Access": {
+                "properties": {
+                    "admin": {
+                        "description": "is admin",
+                        "type": "boolean"
+                    },
+                    "access": {
+                        "description": "list of access",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "groups": {
+                        "description": "list of groups",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "JWTToken": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "security": [
+        {
+            "JWTToken": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Authification methods"
+        },
+        {
+            "name": "net/device",
+            "description": "Сетевое оборудование/Устройства"
+        },
+        {
+            "name": "net/dhcpsnoop",
+            "description": "Сетевое оборудование/DHCP Snooping"
+        },
+        {
+            "name": "inventory",
+            "description": "Склад"
+        },
+        {
+            "name": "*system",
+            "description": "Системные методы"
+        }
+    ]
+}
